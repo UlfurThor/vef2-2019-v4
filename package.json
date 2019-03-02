@@ -1,10 +1,11 @@
 {
-  "name": "v4-synilausn",
+  "name": "v4",
   "version": "1.0.0",
-  "description": "Sýnilausn á verkefni 4",
+  "description": "verkefni 4",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon app.js",
+    "setup": "node setup.js",
     "start": "node app.js",
     "eslint": "eslint *.js",
     "test": "npm run eslint"
@@ -13,14 +14,23 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^3.0.4",
     "dotenv": "6.2.0",
+    "ejs": "^2.6.1",
     "express": "4.16.4",
-    "pg": "7.8.0"
+    "express-session": "^1.15.6",
+    "express-validator": "^5.3.1",
+    "passport": "^0.4.0",
+    "passport-local": "^1.0.0",
+    "pg": "7.8.0",
+    "xss": "^1.0.3"
   },
   "devDependencies": {
-    "eslint": "5.14.1",
+    "eslint": "5.12.1",
     "eslint-config-airbnb-base": "13.1.0",
-    "eslint-plugin-import": "2.16.0",
-    "nodemon": "1.18.10"
+    "eslint-plugin-import": "2.15.0",
+    "node-sass": "^4.11.0",
+    "nodemon": "1.18.9",
+    "stylelint": "^9.10.1"
   }
 }
