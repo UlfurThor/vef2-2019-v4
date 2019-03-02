@@ -3,7 +3,6 @@ const express = require('express');
 const todos = require('./todos');
 const apiHelpers = require('./helpers/apiHelpers');
 const { isEmpty, isFull } = require('./helpers/helpers');
-const { setupDB } = require('./setup');
 
 const router = express.Router();
 
@@ -184,20 +183,6 @@ async function deleteID(req, res) {
 
   return res.status(204).end();
 }
-
-async function setup(req, res) {
-  console.info(`${apiPre}/setup`);
-
-  setupDB().catch((err) => {
-    console.error(err);
-  });
-
-  return res.status(204).json({
-    message: 'Setup complete',
-  });
-}
-
-router.get('/setup', catchErrors(setup));
 
 router.get('/', catchErrors(get));
 router.get('/:id', catchErrors(getID));
