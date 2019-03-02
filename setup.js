@@ -14,7 +14,7 @@ const dbPre = '  DB> ';
 async function main() {
   console.info(`${dbPre}Create db at ${connectionString}`);
   await query('DROP TABLE IF EXISTS todos');
-  console.info(`${dbPre}Table droped`);
+  console.info(`${dbPre}Table dropped`);
 
   try {
     const createTable = await readFileAsync('./schema.sql');
@@ -34,6 +34,10 @@ async function main() {
   }
 }
 
+/*
 main().catch((err) => {
   console.error(err);
 });
+*/
+
+module.exports = { setupDB: main };
