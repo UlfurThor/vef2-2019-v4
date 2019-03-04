@@ -26,7 +26,10 @@ function catchErrors(fn) {
  * @returns {Object} returns a array containing JSON objects for todos
  */
 async function get(req, res) {
-  const { position, completed } = req.body;
+  const { position, completed } = req.query;
+  // completed converted to boolean via 'express-query-parser'
+  //      Called in app.js via 'app.use(queryParser({ parseBoolean: true }));'
+
   console.info(`${apiPre}get`);
 
   let validationResult = [];
@@ -46,7 +49,7 @@ async function get(req, res) {
     ? todos.filter.filterByCompleted(data, { invert: !completed })
     : data;
   // sorts data by position
-  const descending = isFull(position) ? position.toLowerCase().includes('descending') : false;
+  const descending = isFull(position) ? position.toLowerCase().includes('desc') : false;
   const sortedData = isFull(position)
     ? todos.sort.sortByPosition(filteredData, { descending })
     : filteredData;
@@ -54,7 +57,7 @@ async function get(req, res) {
   // returns error if filtering the data empties the list
   if (sortedData.length === 0) {
     return res.status(404).json({
-      error: 'No valid data found',
+      error: 'Item not found',
     });
   }
 
@@ -81,11 +84,11 @@ async function getID(req, res) {
   }
 
   // gets data
-  const data = await todos.listByID(id);
+  const data = await todos.todoByID(id);
   // returns if no object is found
   if (isEmpty(data)) {
     return res.status(404).json({
-      error: `No todo with id ${id} exists`,
+      error: 'Item not found',
     });
   }
   return res.json(data);
@@ -98,13 +101,11 @@ async function getID(req, res) {
  *
  * Title, string, must be between 1-128 characters.
  *
- * Can take 3 optional parameters:
+ * Can take 2 optional parameters:
  *
  * Due, date, must be formated according to ISO 8601, defaults to null
  *
  * Position, number, positive integer, defaults to 0
- *
- * Completed, boolean, defaults to false
  *
  * @param {object} req Request object
  * @param {object} res Response object
@@ -114,7 +115,11 @@ async function post(req, res) {
   const { title, due, position, completed } = req.body;
 
   console.info(`${apiPre}post/`);
-  const validationResult = apiHelpers.validate.data(title, due, position, completed, {
+  const validationResult = apiHelpers.validate.data({
+    title,
+    due,
+    position,
+    completed,
     post: true,
   });
 
@@ -126,7 +131,6 @@ async function post(req, res) {
   }
 
   const ret = await todos.insert(title, { due, position, completed });
-  console.log(ret);
 
   return res.json(ret);
 }
@@ -149,7 +153,30 @@ async function post(req, res) {
  * @returns {Object} returns a single JSON object for a single todo
  */
 async function patch(req, res) {
-  return res.status(451).end();
+  const { title, due, position, completed } = req.body;
+  const { id } = req.params;
+
+  console.info(`${apiPre}patch/${id}`);
+
+  let validationResult = apiHelpers.validate.id(id);
+  validationResult = validationResult.concat(
+    apiHelpers.validate.data({ title, due, position, completed }),
+  );
+
+  if (validationResult.length > 0) {
+    return res.status(400).json({
+      error: 'Bad Request',
+      errorList: validationResult,
+    });
+  }
+
+  const ret = await todos.update(id, { title, due, position, completed });
+  if (isEmpty(ret)) {
+    return res.status(404).json({
+      error: 'Item not found',
+    });
+  }
+  return res.json(ret);
 }
 
 /**
@@ -176,7 +203,7 @@ async function deleteID(req, res) {
   // returns if no object is found
   if (isEmpty(data)) {
     return res.status(404).json({
-      error: `No todo with id ${id} exists`,
+      error: 'Item not found',
     });
   }
   await todos.deleteById(id);

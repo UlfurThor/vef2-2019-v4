@@ -1,26 +1,29 @@
+/* eslint-disable no-unused-vars */
 require('dotenv').config();
 
+const queryParser = require('express-query-parser');
 const express = require('express');
 
 const api = require('./api');
 
-const {
-  PORT: port = 3000,
-  HOST: host = '127.0.0.1',
-} = process.env;
+const { PORT: port = 3000, HOST: host = '127.0.0.1' } = process.env;
 
 const app = express();
+
+app.use(queryParser({ parseBoolean: true }));
 
 app.use(express.json());
 
 app.use(api);
 
-function notFoundHandler(req, res, next) { // eslint-disable-line
+function notFoundHandler(req, res, next) {
+  // eslint-disable-line
   console.warn('Not found', req.originalUrl);
   res.status(404).json({ error: 'Not found' });
 }
 
-function errorHandler(err, req, res, next) { // eslint-disable-line
+function errorHandler(err, req, res, next) {
+  // eslint-disable-line
   console.error(err);
 
   if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
