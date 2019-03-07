@@ -36,7 +36,7 @@ function completed(completedVal) {
 }
 
 /**
- * Validates position string, must be either 'ascending' or 'descending'
+ * Validates position string, must be either `ascending` or `descending`
  * @param {*} positionVal
  */
 function position(positionVal) {
