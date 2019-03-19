@@ -69,7 +69,6 @@ async function insert(title, param = {}) {
     isFull(param.position) ? 'position' : null,
     isFull(param.completed) ? 'completed' : null,
   ].filter(Boolean);
-
   const changedValues = [
     isFull(param.due) ? xss(param.due) : null,
     isFull(param.position) ? xss(param.position) : null,
@@ -79,12 +78,11 @@ async function insert(title, param = {}) {
   const updates = [title, ...changedValues];
 
   const updatedColumnsQuery = changedColumns.map((column, i) => `$${i + 2}`);
-
   const q = `
   INSERT
   INTO todos
-  (title${changedColumns !== [] ? ', ' : ''}${changedColumns.join(', ')})
-  VALUES ($1${updatedColumnsQuery !== [] ? ', ' : ''}${updatedColumnsQuery.join(', ')})
+  (title${changedColumns.length === 0 ? '' : `, ${changedColumns.join(', ')}`})
+  VALUES ($1${updatedColumnsQuery.length === 0 ? '' : `, ${updatedColumnsQuery.join(', ')}`})
   RETURNING *;
   `;
 

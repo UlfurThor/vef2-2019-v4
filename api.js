@@ -132,7 +132,7 @@ async function post(req, res) {
 
   const ret = await todos.insert(title, { due, position, completed });
 
-  return res.json(ret);
+  return res.status(201).json(ret); // fixed status code after turn in
 }
 
 /**
